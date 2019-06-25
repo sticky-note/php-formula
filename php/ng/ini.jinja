@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 # vim: ft=jinja
-{# php.ini management macro. #}
-{% from "php/ng/macro.jinja" import sls_block, serialize %}
+{#- php.ini management macro. #}
+{%- set tplroot = tpldir.split('/')[0] %}
+{%- from tplroot ~ "/ng/macro.jinja" import sls_block, serialize %}
+{%- from tplroot ~ "/ng/libtofs.jinja" import files_switch with context %}
 
-{% macro php_ini(filename, opts={}, settings={}) %}
+{%- macro php_ini(filepath, tofs_lookup, opts={}, settings={}) %}
   file.managed:
     {{ sls_block(opts) }}
-    - name: {{ filename }}
-    - source: salt://php/ng/files/php.ini
+    - name: {{ filepath }}
+    - source: {{ files_switch( [ 'php.ini' ],
+                               tofs_lookup,
+                               v1_path_prefix = '/ng'
+              ) }}
     - template: jinja
     - context:
         config: {{ serialize(settings) }}
+
 {%- endmacro -%}

@@ -1,16 +1,25 @@
 # Manages the php-hhvm main ini file
-{% from "php/ng/map.jinja" import php with context %}
-{% from "php/ng/ini.jinja" import php_ini %}
+{%- set tplroot = tpldir.split('/')[0] %}
+{%- from tplroot ~ "/ng/map.jinja" import php with context %}
+{%- from tplroot ~ "/ng/ini.jinja" import php_ini %}
 
-{% set server_settings = php.lookup.hhvm.server %}
-{% do server_settings.update(php.hhvm.config.server.settings) %}
+{%- set server_settings = php.lookup.hhvm.server %}
+{%- do server_settings.update(php.hhvm.config.server.settings) %}
 
-{% set php_settings = php.lookup.hhvm.php %}
-{% do php_settings.update(php.hhvm.config.php.settings) %}
+{%- set php_settings = php.lookup.hhvm.php %}
+{%- do php_settings.update(php.hhvm.config.php.settings) %}
 
 php_hhvm_ini_config:
-  {{ php_ini(php.lookup.hhvm.conf, php.hhvm.config.server.opts, server_settings) }}
+  {{ php_ini(php.lookup.hhvm.conf,
+             'php_hhvm_ini_config',
+             php.hhvm.config.server.opts,
+             server_settings
+  ) }}
 
 php_hhvm_conf_config:
-  {{ php_ini(php.lookup.hhvm.ini, php.hhvm.config.php.opts, php_settings) }}
+  {{ php_ini(php.lookup.hhvm.ini,
+             'php_hhvm_conf_config',
+             php.hhvm.config.php.opts,
+             php_settings
+  ) }}
 
